@@ -1,0 +1,57 @@
+import React, { useState } from 'react';
+import { AuthPage } from './components/auth-page';
+import { SignUpPage } from './components/signup-page';
+import { Dashboard } from './components/dashboard';
+import { Toaster } from './components/ui/sonner';
+
+type AppState = 'auth' | 'signup' | 'dashboard';
+type UserType = 'buyer' | 'seller' | null;
+
+function App() {
+  const [currentPage, setCurrentPage] = useState<AppState>('auth');
+  const [userType, setUserType] = useState<UserType>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const handleUserTypeSelect = (type: 'buyer' | 'seller') => {
+    setUserType(type);
+    setCurrentPage('signup');
+  };
+
+  const handleSignUpComplete = () => {
+    setIsLoggedIn(true);
+    setCurrentPage('dashboard');
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setUserType(null);
+    setCurrentPage('auth');
+  };
+
+  return (
+    <div className="min-h-screen bg-white">
+      {currentPage === 'auth' && (
+        <AuthPage onUserTypeSelect={handleUserTypeSelect} />
+      )}
+      
+      {currentPage === 'signup' && (
+        <SignUpPage 
+          userType={userType!}
+          onSignUpComplete={handleSignUpComplete}
+          onBack={() => setCurrentPage('auth')}
+        />
+      )}
+      
+      {currentPage === 'dashboard' && (
+        <Dashboard 
+          userType={userType!}
+          onLogout={handleLogout}
+        />
+      )}
+      
+      <Toaster />
+    </div>
+  );
+}
+
+export default App;
